@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
     UserFollow.where(user_id: user.id, item_type: 'User').count
   end
   
-  cache_counter :follower_users, class_name: 'UserFollow' do |user|
+  cache_counter :follower_users, class_name: 'UserFollow', foreign_key: 'item_id' do |user|
     UserFollow.where(item_id: user.id, item_type: 'User').count
   end
   

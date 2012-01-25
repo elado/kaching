@@ -49,5 +49,9 @@ Specify a `class_name` and provide a block to return a count for custom operatio
 	  cache_counter :following_users, class_name: 'UserFollow' do |user|
 	    UserFollow.where(user_id: user.id, item_type: 'User').count
 	  end
+
+	  cache_counter :follower_users, class_name: 'UserFollow', foreign_key: 'item_id' do |user|
+	    UserFollow.where(item_id: user.id, item_type: 'User').count
+	  end
 	end
 
