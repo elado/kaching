@@ -16,6 +16,8 @@ module AttributeCache
   module ModelAdditions
     module ClassMethods
       def cache_counter(attribute, options = {})
+        options = {}.merge(options || {})
+        
         # AttributeCache.attributes << {
         #   attribute: attribute,
         #   options: options
@@ -23,7 +25,7 @@ module AttributeCache
         # 
         # puts AttributeCache.attributes
         
-        count_method_name = "#{attribute.to_s.singularize}_count"
+        count_method_name = options[:method_name] || "#{attribute.to_s}_count"
         
         AttributeCache.logger.info "DEFINE #{self.name}##{count_method_name}"
         

@@ -1,5 +1,4 @@
 *.gem
-*.sqlite3
 .bundle
 .rvmrc
 Gemfile.lock
@@ -8,3 +7,4 @@ pkg/*
 *.rbc
 tmp/*
 .DS_Store
+test.sqlite3
