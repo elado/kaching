@@ -50,30 +50,6 @@ module AttributeCache
         
         AttributeCache.logger.info "MODEL DEFINE #{countable_class} after_commit"
         
-        # countable_class.send(:after_create) do
-        #   AttributeCache.logger.info "MODEL :after_create"
-        #   
-        #   foreign_key = container_class.reflections[attribute].options[:foreign_key]
-        #   foreign_key = if foreign_key
-        #     foreign_key.gsub(/_id$/, "")
-        #   else
-        #     container_class.name.underscore.singularize
-        #   end
-        #   
-        #   belongs_to_item = self.send(foreign_key) # TODO - or from associaction options
-        #   AttributeCache.logger.info "MODEL :after_create (#{belongs_to_item.class.name})"
-        #   
-        #   return unless belongs_to_item
-        #   
-        #   counter_key = belongs_to_item.attribute_cache_key(attribute, :count)
-        #   
-        #   AttributeCache.logger.info " > MODEL :after_create"
-        # 
-        #   AttributeCache.logger.info "INCR #{counter_key}"
-        #     
-        #   AttributeCache.cache_store.incr(counter_key)
-        # end
-        
         countable_class.send(:after_commit) do
           begin
             reflection = container_class.reflections[attribute]
