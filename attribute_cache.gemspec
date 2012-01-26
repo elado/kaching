@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Elad Ossadon"]
   s.email       = ["elad@ossadon.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Cache attributes of Rails ActiveRecord in an external storage such as Redis.}
+  s.description = %q{Cache attributes of Rails ActiveRecord in an external storage such as Redis.}
 
   s.rubyforge_project = "attribute_cache"
 

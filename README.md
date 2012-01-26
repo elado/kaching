@@ -4,7 +4,7 @@ Cache attributes of Rails ActiveRecord in an external storage such as Redis.
 
 ## Installation
 
-	gem "attribute_cache"
+	gem 'attribute_cache', git: 'git://github.com/elado/attribute_cache.git'
 
 Requires Ruby 1.9.2+.
 
