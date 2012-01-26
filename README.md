@@ -73,7 +73,7 @@ Example: User can Like stuff. In order to check if a user likes an item, you can
 
 	Like.where(user_id: user.id, item_id: item.id, item_type: item.class.name).exists?
 	
-But with many items and checkes, this process might take some time.
+But with many items and checks, this process might take some time.
 
 In order to solve that, `attribute_cache` fetches once all liked items and stores them in cache.
 
