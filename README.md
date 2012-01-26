@@ -71,7 +71,7 @@ Caches presence of items in a list that is belong to antoer item. Automatically 
 
 Example: User can Like stuff. In order to check if a user likes an item, you can run a query like
 
-	UserLike.where(user_id: user.id, item_id: item.id, item_type: item.class.name).exists?
+	Like.where(user_id: user.id, item_id: item.id, item_type: item.class.name).exists?
 	
 But with many items and checkes, this process might take some time.
 
