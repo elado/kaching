@@ -1,4 +1,6 @@
 require 'logger'
+require 'attribute_cache/cache_counter'
+require 'attribute_cache/cache_list'
 
 module AttributeCache
   # def self.attributes
@@ -10,94 +12,39 @@ module AttributeCache
   end
   
   def self.logger
-    @logger ||= Logger.new(ENV['ATTRIBUTE_CACHE_LOG'] ? $stdout : '/dev/null')
+    @logger ||= begin
+      logger = Logger.new(ENV['ATTRIBUTE_CACHE_LOG'] ? $stdout : '/dev/null')
+      logger.level = Logger::INFO
+      logger
+    end
+  end
+  
+  def self._extract_foreign_key_from(attribute, options, container_class)
+    foreign_key = options[:foreign_key]
+            
+    if !foreign_key
+      reflection = container_class.reflections[attribute]
+      foreign_key = reflection.options[:foreign_key] if reflection
+    end
+
+    foreign_key = if foreign_key
+      foreign_key.gsub(/_id$/, "")
+    else
+      container_class.name.underscore.singularize
+    end
+    
+    foreign_key
   end
   
   module ModelAdditions
     module ClassMethods
-      def cache_counter(attribute, options = {})
-        options = {}.merge(options || {})
-        
-        container_class = self
-        
-        count_method_name = options[:method_name] || "#{attribute.to_s}_count"
-        
-        AttributeCache.logger.info "DEFINE #{container_class.name}##{count_method_name}"
-        
-        container_class.send :define_method, count_method_name do
-          value = AttributeCache.cache_store.fetch(attribute_cache_key(attribute, :count)) {
-            value = block_given? ? yield(self) : self.send(attribute).count
-            AttributeCache.logger.info "FIRST FETCH #{value}"
-            value
-          }.to_i
-
-          AttributeCache.logger.info "CALL #{container_class.name}##{count_method_name} = #{value}"
-          
-          value
-        end
-
-        container_class.send(:after_commit) do
-          if self.destroyed?
-            AttributeCache.cache_store.del(counter_key)
-          end
-        end
-        
-        countable_class = options[:class_name].constantize if options[:class_name]
-        countable_class ||= attribute.to_s.singularize.classify.constantize
-        
-        AttributeCache.logger.info "COUNTABLE DEFINE #{countable_class} after_commit"
-        
-        countable_class.send(:after_commit) do
-          begin
-            foreign_key = options[:foreign_key]
-            
-            if !foreign_key
-              reflection = container_class.reflections[attribute]
-              foreign_key = reflection.options[:foreign_key] if reflection
-            end
-
-            foreign_key = if foreign_key
-              foreign_key.gsub(/_id$/, "")
-            else
-              container_class.name.underscore.singularize
-            end
-
-            AttributeCache.logger.info "COUNTABLE #{countable_class.name} after_create foreign_key = #{foreign_key}"
-
-            belongs_to_item = self.send(foreign_key) # TODO - or from associaction options
-          
-            return unless belongs_to_item
-    
-            AttributeCache.logger.info " > COUNTABLE after_create #{countable_class.name} belongs_to(#{foreign_key}) = #{belongs_to_item.class.name}##{belongs_to_item.id}"
-          
-            created = self.send(:transaction_include_action?, :create)
-            destroyed = self.destroyed?
-            
-            counter_key = belongs_to_item.attribute_cache_key(attribute, :count)
-          
-            AttributeCache.logger.info " > COUNTABLE after_commit #{created ? 'created' : destroyed ? 'destroyed' : 'none'}"
-        
-            if created
-              AttributeCache.logger.info "INCR #{counter_key}"
-            
-              AttributeCache.cache_store.incr(counter_key)
-            elsif destroyed
-              AttributeCache.logger.info "DECR #{counter_key}"
-
-              AttributeCache.cache_store.decr(counter_key)
-            end
-          rescue Exception => e
-            puts e.message
-            puts e.backtrace
-            raise
-          end
-        end
-      end
+      include CacheCounter
+      include CacheList
     end
   
     module InstanceMethods
       def attribute_cache_key(attribute, type)
-        "AttributeCache::#{self.class.name.underscore.singularize}::#{self.id}::#{attribute}::#{type}"
+        "AttributeCache::#{type}::#{self.class.name.underscore.singularize}::#{self.id}::#{attribute}"
       end
     end
     

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AttributeCache::ModelAdditions do
+describe AttributeCache::CacheCounter do
   let(:user) { User.create }
   
   it "should create method on user" do
@@ -31,16 +31,16 @@ describe AttributeCache::ModelAdditions do
   
   it "should use count blocks if passed" do
     user.following_users_count.should == 0
-    UserFollow.create(user_id: user.id, item: User.create)
+    Follow.create(user_id: user.id, item: User.create)
     user.following_users_count.should == 1
-    UserFollow.create(user_id: user.id, item: User.create)
+    Follow.create(user_id: user.id, item: User.create)
     user.following_users_count.should == 2
   end
   
   context "with blocks" do
     it "should use count blocks if passed and show up-to-date count for existing user" do
-      UserFollow.create!(user_id: user.id, item: User.create)
-      UserFollow.create!(user_id: user.id, item: User.create)
+      Follow.create!(user_id: user.id, item: User.create)
+      Follow.create!(user_id: user.id, item: User.create)
       user.following_users_count.should == 2
   
       id = user.id
@@ -48,7 +48,7 @@ describe AttributeCache::ModelAdditions do
       user = User.find(id)
       user.following_users_count.should == 2
 
-      UserFollow.create!(user_id: user.id, item: User.create)
+      Follow.create!(user_id: user.id, item: User.create)
       user.following_users_count.should == 3
     end
 
@@ -57,7 +57,7 @@ describe AttributeCache::ModelAdditions do
 
       user.follower_users_count.should == 0
     
-      UserFollow.create(user_id: follower.id, item: user)
+      Follow.create(user_id: follower.id, item: user)
       user.follower_users_count.should == 1
     end
   end
