@@ -73,19 +73,19 @@ Example: User can Like stuff. In order to check if a user likes an item, you can
 
 	Like.where(user_id: user.id, item_id: item.id, item_type: item.class.name).exists?
 	
-But with many items and checks, this process might take some time.
+But with many items and checks, this process might take some precious time.
 
 In order to solve that, `attribute_cache` fetches once all liked items and stores them in cache.
 
 `cache_list :likes` generates these methods:
 
 	add_like!(item)
-	remove_unlike!(item)
-	has_likes(item)              
+	remove_like!(item)
+	has_like?(item)              
 	likes_count              
 	reset_cache_likes!
 
- and from now on you can ask if `user.likes?(item)`
+ and from now on you can ask if `user.has_likes?(item)`
 
 	# like.rb
 	class Like < ActiveRecord::Base
@@ -127,7 +127,7 @@ In order to solve that, `attribute_cache` fetches once all liked items and store
 	
 	user.likes_count             # => 1
 	
-The first time `has_like?` is hit, it collects all IDs of likes items and stores them in cache.
+The first time `has_like?` is called, it collects all IDs of likes items and stores them in cache.
 
 The second time just asks the cache, and every creation/deletion of an item updates the cache.
 
