@@ -83,7 +83,7 @@ In order to solve that, `attribute_cache` fetches once all liked items and store
 	remove_like!(item)
 	has_like?(item)              
 	likes_count              
-	reset_cache_likes!
+	reset_list_cache_likes!
 
  and from now on you can ask if `user.has_likes?(item)`
 
@@ -135,10 +135,10 @@ The second time just asks the cache, and every creation/deletion of an item upda
 ### Options
 
 
-	item_key					The item name on the list table (like 'movie' for 'movie_id')
-	polymorphic					Whether list table is polymorphic (list table contains 'item_id' and 'item_type')
-	add_method_name				Name of method to add. Can be customized, for example 'like!' instead of 'add_like!'
-	remove_method_name			Name of method to remove. Can be customized, for example 'unlike!' instead of 'removes_like!'
-	exists_method_name			Name of method to check if exists. Can be customized, for example 'likes?' instead of 'has_like?'
-	reset_cache_method_name		Reset cache, after manual insertion
-	class_name					Name of class of list table, in case it's different than default
+	item_key						The item name on the list table (like 'movie' for 'movie_id')
+	polymorphic						Whether list table is polymorphic (list table contains 'item_id' and 'item_type')
+	add_method_name					Name of method to add. Can be customized, for example 'like!' instead of 'add_like!'
+	remove_method_name				Name of method to remove. Can be customized, for example 'unlike!' instead of 'removes_like!'
+	exists_method_name				Name of method to check if exists. Can be customized, for example 'likes?' instead of 'has_like?'
+	reset_list_cache_method_name	Reset cache, after manual insertion
+	class_name						Name of class of list table, in case it's different than default

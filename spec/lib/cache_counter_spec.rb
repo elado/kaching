@@ -5,6 +5,7 @@ describe AttributeCache::CacheCounter do
   
   it "should create method on user" do
     user.should respond_to(:articles_count)
+    user.should respond_to(:reset_count_cache_articles!)
   end
   
   it "should return up-to-date count with method" do
@@ -13,6 +14,21 @@ describe AttributeCache::CacheCounter do
     user.articles_count.should == 1
     user.articles << Article.new
     user.articles_count.should == 2
+  end
+  
+  it "should update count" do
+    user.articles_count.should == 0
+    user.articles << Article.new
+
+    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).to_i.should == 1
+
+    user.reset_count_cache_articles!
+    
+    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).should be_blank
+    
+    user.articles_count.should == user.articles_count
+
+    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).to_i.should == 1
   end
   
   it "should return up-to-date count for user with items" do
@@ -25,6 +41,16 @@ describe AttributeCache::CacheCounter do
     user = User.find(id)
     user.articles_count.should == 2
   
+    user.articles << Article.new
+    user.articles_count.should == 3
+  end
+  
+  it "should fetch count where not exists yet (_count method wasn't called and inserted new record)" do
+    user.articles << Article.new
+    user.articles << Article.new
+    user.articles_count.should == 2
+    user.reset_count_cache_articles!
+    
     user.articles << Article.new
     user.articles_count.should == 3
   end

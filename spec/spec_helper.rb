@@ -54,4 +54,8 @@ RSpec.configure do |config|
       rm -f #{REDIS_PID}
     }
   end
+  
+  config.before(:each) do
+    $redis.flushdb
+  end
 end
