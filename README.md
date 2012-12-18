@@ -40,11 +40,11 @@ Adds a count method to a class, and adds an after_commit callback to the countab
 	# code
 	user = User.create!
 	
-	user.article_count # => 0
+	user.articles_count # => 0
 
 	user.articles << Article.new
 
-	user.article_count # => 1
+	user.articles_count # => 1
 	
 
 `cache_counter` adds an after_commit to increase/decrease the counter directly on the data store.
@@ -110,7 +110,7 @@ In order to solve that, `attribute_cache` fetches once all liked items and store
 	memento = Movie.create!(name: "memento")
 	inception = Movie.create!(name: "inception")
 	
-	user.add_like!(memento)      # like! is an auto generated method!
+	user.add_like!(memento)      # add_like! is an auto generated method!
 	
 	user.likes_count             # => 1
 	

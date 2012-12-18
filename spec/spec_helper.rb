@@ -1,18 +1,9 @@
 require 'attribute_cache'
-require "support/database_connection"
-require "support/database_models"
+require 'support/db/connection'
+require 'support/db/models'
 
 RSpec.configure do |config|
   config.mock_with :rspec
-
-  config.before(:all) do
-    dir = File.join(File.dirname(__FILE__), 'support/db')
-    
-    old_db = File.join(dir, 'test.sqlite3')
-    FileUtils.rm(old_db) if File.exists?(old_db)
-    FileUtils.cp(File.join(dir, '.blank.sqlite3'), File.join(dir, 'test.sqlite3'))
-  end
-
   #  ==========================> Redis test configuration
 
   root = File.dirname(__FILE__)
