@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/elado/attribute_cache.png)](http://travis-ci.org/elado/attribute_cache)
 
-Cache attributes of Rails ActiveRecord in an external storage such as Redis.
+Cache attributes (like counters and lists) of Rails ActiveRecord in an external storage such as Redis.
 
 ## Installation
 
