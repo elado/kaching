@@ -97,7 +97,7 @@ likes_count
 reset_list_cache_likes!
 ```
 
- and from now on you can ask if `user.has_likes?(item)`
+ and from now on you can ask if `user.has_like?(item)`
 
 ```ruby
 # like.rb
