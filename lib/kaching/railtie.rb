@@ -1,4 +1,4 @@
-module AttributeCache
+module Kaching
   class Railtie < Rails::Railtie
     initializer 'attrubute_cache.model_additions' do
       ActiveSupport.on_load :active_record do

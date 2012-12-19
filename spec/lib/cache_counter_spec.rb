@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AttributeCache::CacheCounter do
+describe Kaching::CacheCounter do
   let(:user) { User.create }
   
   it "should create method on user" do
@@ -20,15 +20,15 @@ describe AttributeCache::CacheCounter do
     user.articles_count.should == 0
     user.articles << Article.new
 
-    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).to_i.should == 1
+    Kaching.cache_store.get(user.kaching_key(:articles, :count)).to_i.should == 1
 
     user.reset_count_cache_articles!
     
-    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).should be_blank
+    Kaching.cache_store.get(user.kaching_key(:articles, :count)).should be_blank
     
     user.articles_count.should == user.articles_count
 
-    AttributeCache.cache_store.get(user.attribute_cache_key(:articles, :count)).to_i.should == 1
+    Kaching.cache_store.get(user.kaching_key(:articles, :count)).to_i.should == 1
   end
   
   it "should return up-to-date count for user with items" do

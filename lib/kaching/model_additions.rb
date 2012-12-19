@@ -1,14 +1,14 @@
 require 'logger'
-require 'attribute_cache/cache_counter'
-require 'attribute_cache/cache_list'
+require 'kaching/cache_counter'
+require 'kaching/cache_list'
 
-module AttributeCache
+module Kaching
   # def self.attributes
   #   @attributes ||= []
   # end
 
   def self.cache_store
-    AttributeCache::StorageProviders.Redis
+    Kaching::StorageProviders.Redis
   end
   
   def self.logger
@@ -43,8 +43,8 @@ module AttributeCache
     end
   
     module InstanceMethods
-      def attribute_cache_key(attribute, type)
-        "AttributeCache::#{type}::#{self.class.name.underscore.singularize}::#{self.id}::#{attribute}"
+      def kaching_key(attribute, type)
+        "Kaching::#{type}::#{self.class.name.underscore.singularize}::#{self.id}::#{attribute}"
       end
     end
     

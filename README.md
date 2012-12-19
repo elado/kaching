@@ -1,13 +1,69 @@
-# attribute_cache
+# kaching
 
-[![Build Status](https://secure.travis-ci.org/elado/attribute_cache.png)](http://travis-ci.org/elado/attribute_cache)
+[![Build Status](https://secure.travis-ci.org/elado/kaching.png)](http://travis-ci.org/elado/kaching)
 
-Cache attributes (like counters and lists) of Rails ActiveRecord in an external storage such as Redis.
+Doesn't hit the DB for counters and existence of a many-to-many association.
+
+## Quick Intro & Examples
+
+**Q: How does it help me?**
+
+A: The short answer -- Less DB hits. More, faster Redis hits.
+
+### Countrs
+
+```ruby
+# hits DB
+author.articles.count
+
+# first time hits DB and caches into Redis
+author.articles_count
+
+# triggers an after_commit that increases the counter on Redis, doesn't run a count query on the DB
+author.articles.create!(title: "Hello")
+
+# no DB hit. just reads from Redis
+author.articles_count
+```
+
+### Lists
+
+```ruby
+# writes to DB, updates Redis
+user.add_like!(memento)
+
+# no DB hit
+user.likes_count
+
+# no DB hit
+user.has_like?(memento)      # => true
+# no DB hit
+user.has_like?(inception)    # => false
+
+# writes to DB, updates Redis
+user.add_like!(inception)
+
+# no DB hit
+user.has_like?(inception)    # => true
+
+# no DB hit
+user.likes_count             # => 2
+
+# deletes from DB, updates Redis
+user.remove_like(inception)
+
+# no DB hit
+user.has_like?(inception)    # => false
+
+# no DB hit
+user.likes_count             # => 1
+```
+
 
 ## Installation
 
 ```ruby
-gem 'attribute_cache', git: 'git://github.com/elado/attribute_cache.git'
+gem 'kaching'
 ```
 
 Requires Ruby 1.9.2+.
@@ -20,7 +76,7 @@ Requires Ruby 1.9.2+.
 # config/initializers/redis.rb
 $redis = Redis.new
 
-AttributeCache::StorageProviders.Redis = $redis
+Kaching::StorageProviders.Redis = $redis
 ```
 
 ## cache_counter
@@ -49,7 +105,7 @@ user = User.create!
 
 user.articles_count # => 0
 
-user.articles << Article.new
+user.articles.create!(title: "Hello")
 
 user.articles_count # => 1
 ```
@@ -85,7 +141,7 @@ Like.where(user_id: user.id, item_id: item.id, item_type: item.class.name).exist
 
 But with many items and checks, this process might take some precious time.
 
-In order to solve that, `attribute_cache` fetches once all liked items and stores them in cache.
+In order to solve that, `kaching` fetches once all liked items and stores them in cache.
 
 `cache_list :likes` generates these methods:
 

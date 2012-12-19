@@ -1,4 +1,4 @@
-module AttributeCache
+module Kaching
   module CacheList
     def cache_list(attribute, options = {})
       container_class = self
@@ -38,7 +38,7 @@ module AttributeCache
         }.merge(options)
       end
       
-      AttributeCache.logger.info { "LIST NEW #{self.name} #{options}" }
+      Kaching.logger.info { "LIST NEW #{self.name} #{options}" }
 
       list_class = options[:class_name].constantize if options[:class_name]
       list_class ||= attribute.to_s.singularize.classify.constantize
@@ -52,7 +52,7 @@ module AttributeCache
       if options[:add_alter_methods]
         container_class.send :define_method, options[:add_method_name] do |*args|
           item, values = args
-          AttributeCache.logger.info { "LIST ADD #{self.class.name}##{self.id} #{item.class.name}##{item.id}" }
+          Kaching.logger.info { "LIST ADD #{self.class.name}##{self.id} #{item.class.name}##{item.id}" }
           
           values = values ? values.dup : {}
           
@@ -67,7 +67,7 @@ module AttributeCache
         end
 
         container_class.send :define_method, options[:remove_method_name] do |item|
-          AttributeCache.logger.info { "LIST REMOVE #{self.class.name}##{self.id} #{item.class.name}##{item.id}" }
+          Kaching.logger.info { "LIST REMOVE #{self.class.name}##{self.id} #{item.class.name}##{item.id}" }
 
           where = { item_key_id => item.id }
         
@@ -100,19 +100,19 @@ module AttributeCache
       container_class.send(:define_method, options[:exists_method_name]) do |item|
         return false if item == self
         
-        hash_key = self.attribute_cache_key(attribute, :list)
+        hash_key = self.kaching_key(attribute, :list)
         
-        if AttributeCache.cache_store.hexists(hash_key, "created")
-          AttributeCache.logger.info { "USING CREATED #{hash_key}" }
-          AttributeCache.cache_store.hexists hash_key, item.id.to_s
+        if Kaching.cache_store.hexists(hash_key, "created")
+          Kaching.logger.info { "USING CREATED #{hash_key}" }
+          Kaching.cache_store.hexists hash_key, item.id.to_s
         else
-          AttributeCache.logger.info { "NOT CREATED - CREATING #{hash_key}" }
+          Kaching.logger.info { "NOT CREATED - CREATING #{hash_key}" }
           
           # fetch all ids
           query = block_given? ? yield(self) : self.send(options[:list_method_name])
           all_ids = container_class.connection.select_values(query.select(item_key_id).to_sql)
 
-          AttributeCache.logger.info { "FETCH all_ids = #{all_ids.length} | #{all_ids}" }
+          Kaching.logger.info { "FETCH all_ids = #{all_ids.length} | #{all_ids}" }
 
           no_ids = all_ids.empty?
 
@@ -123,7 +123,7 @@ module AttributeCache
           ids_with_values_for_hash << "created" << 1
           
           # store them with "created" key. "created" means that hash was created and it's not only empty.
-          AttributeCache.cache_store.send :hmset, *[hash_key, ids_with_values_for_hash].flatten
+          Kaching.cache_store.send :hmset, *[hash_key, ids_with_values_for_hash].flatten
           
           if no_ids
             false
@@ -134,44 +134,44 @@ module AttributeCache
       end
       
       container_class.send :define_method, options[:reset_cache_method_name] do
-        AttributeCache.cache_store.del(self.attribute_cache_key(attribute, :list))
+        Kaching.cache_store.del(self.kaching_key(attribute, :list))
         
         self.send(options[:reset_count_cache_method_name]) if self.respond_to?(options[:reset_count_cache_method_name])
       end
 
       container_class.send(:after_commit) do
         if self.destroyed?
-          AttributeCache.cache_store.del(self.attribute_cache_key(attribute, :list))
+          Kaching.cache_store.del(self.kaching_key(attribute, :list))
         end
       end
       
-      foreign_key = AttributeCache._extract_foreign_key_from(attribute, options, container_class)
+      foreign_key = Kaching._extract_foreign_key_from(attribute, options, container_class)
       
       after_commit_method_name = "after_commit_list_#{attribute}"
       list_class.send(:define_method, after_commit_method_name) do |action|
         begin
-          AttributeCache.logger.info { "LIST #{list_class.name} after_commit foreign_key = #{foreign_key}" }
+          Kaching.logger.info { "LIST #{list_class.name} after_commit foreign_key = #{foreign_key}" }
       
           belongs_to_item = self.send(foreign_key)
 
           return unless belongs_to_item
 
-          hash_key = belongs_to_item.attribute_cache_key(attribute, :list)
+          hash_key = belongs_to_item.kaching_key(attribute, :list)
           
           # don't bother managing the list because it's not created yet. let the has_item?() build it with all items, and then on creation it'll update the list
-          return unless AttributeCache.cache_store.hexists(hash_key, "created")
+          return unless Kaching.cache_store.hexists(hash_key, "created")
           
-          AttributeCache.logger.info { " > LIST after_commit #{list_class.name} belongs_to(#{foreign_key}) = #{belongs_to_item.class.name}##{belongs_to_item.id} #{action.inspect}" }
+          Kaching.logger.info { " > LIST after_commit #{list_class.name} belongs_to(#{foreign_key}) = #{belongs_to_item.class.name}##{belongs_to_item.id} #{action.inspect}" }
 
           case action
           when :create
-            AttributeCache.logger.info { "  > LIST SET #{hash_key} #{self.class.name}##{self.id} type = #{AttributeCache.cache_store.type(hash_key)}" }
+            Kaching.logger.info { "  > LIST SET #{hash_key} #{self.class.name}##{self.id} type = #{Kaching.cache_store.type(hash_key)}" }
             
-            AttributeCache.cache_store.hset(hash_key, self.send(item_key_id), 1)
+            Kaching.cache_store.hset(hash_key, self.send(item_key_id), 1)
           when :destroy
-            AttributeCache.logger.info { "  > LIST DEL #{hash_key}" }
+            Kaching.logger.info { "  > LIST DEL #{hash_key}" }
       
-            AttributeCache.cache_store.hdel(hash_key, self.send(item_key_id))
+            Kaching.cache_store.hdel(hash_key, self.send(item_key_id))
           end
         rescue
           puts $!.message

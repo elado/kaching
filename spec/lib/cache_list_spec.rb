@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AttributeCache::CacheList do
+describe Kaching::CacheList do
   let(:user) { User.create }
 
   context "non-polymorphic" do

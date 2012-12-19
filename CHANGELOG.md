@@ -1,7 +1,13 @@
+## v0.0.3
+
+* Rename to "kaching", gem release
+* Bug fixes
+* Better specs
+
 ## v0.0.2
 
-* cache list
+* Cache list
 
 ## v0.0.1
 
-* initial release
+* Initial release

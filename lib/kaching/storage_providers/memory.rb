@@ -1,4 +1,4 @@
-module AttributeCache
+module Kaching
   module StorageProviders
     class Memory
       class << self
@@ -7,12 +7,12 @@ module AttributeCache
         end
         
         def get(key)
-          AttributeCache.logger.info "CACHE read #{key} = #{data[key]}"
+          Kaching.logger.info "CACHE read #{key} = #{data[key]}"
           data[key]
         end
         
         def set(key, value)
-          AttributeCache.logger.info "CACHE write #{key} = #{value}"
+          Kaching.logger.info "CACHE write #{key} = #{value}"
           data[key] = value
         end
         
@@ -21,19 +21,19 @@ module AttributeCache
         end
         
         def fetch(key, &block)
-          AttributeCache.logger.info "CACHE fetch #{key} = #{data[key].inspect}"
+          Kaching.logger.info "CACHE fetch #{key} = #{data[key].inspect}"
           get(key) || set(key, block.call)
         end
         
         def incr(key)
           data[key] ||= 0
-          AttributeCache.logger.info "CACHE inc #{key} = #{data[key] + 1}"
+          Kaching.logger.info "CACHE inc #{key} = #{data[key] + 1}"
           data[key] += 1
         end
         
         def decr(key)
           data[key] ||= 0
-          AttributeCache.logger.info "CACHE dec #{key} = #{data[key] - 1}"
+          Kaching.logger.info "CACHE dec #{key} = #{data[key] - 1}"
           data[key] -= 1
         end
       end

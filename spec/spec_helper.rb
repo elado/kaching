@@ -1,4 +1,4 @@
-require 'attribute_cache'
+require 'kaching'
 require 'support/db/connection'
 require 'support/db/models'
 
@@ -35,7 +35,7 @@ RSpec.configure do |config|
     uri = URI.parse("http://localhost:9726")
     $redis = Redis.new(host: uri.host, port: uri.port)
     
-    AttributeCache::StorageProviders.Redis = $redis
+    Kaching::StorageProviders.Redis = $redis
   end
     
   config.after(:suite) do

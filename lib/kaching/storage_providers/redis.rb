@@ -1,6 +1,6 @@
 require 'redis'
 
-module AttributeCache
+module Kaching
   module StorageProviders
     def self.Redis
       if @redis && !@redis.respond_to?(:fetch)
