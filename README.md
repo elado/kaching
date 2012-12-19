@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/elado/kaching.png)](http://travis-ci.org/elado/kaching)
 
-Doesn't hit the DB for counters and existence of a many-to-many association.
+Makes your DB suffer less from `COUNT(*)` queries and check for existence queries of associations, by keeping and maintaining counts and lists on Redis, for faster access.
 
 ## Quick Intro & Examples
 
@@ -29,36 +29,17 @@ author.articles_count
 ### Lists
 
 ```ruby
-# writes to DB, updates Redis
-user.add_like!(memento)
-
-# no DB hit
-user.likes_count
-
-# no DB hit
-user.has_like?(memento)      # => true
-# no DB hit
-user.has_like?(inception)    # => false
-
-# writes to DB, updates Redis
-user.add_like!(inception)
-
-# no DB hit
-user.has_like?(inception)    # => true
-
-# no DB hit
-user.likes_count             # => 2
-
-# deletes from DB, updates Redis
-user.remove_like(inception)
-
-# no DB hit
-user.has_like?(inception)    # => false
-
-# no DB hit
-user.likes_count             # => 1
+user.add_like!(memento)      # writes to DB, updates Redis
+user.likes_count             # no DB hit
+user.has_like?(memento)      # no DB hit   # => true
+user.has_like?(inception)    # no DB hit   # => false
+user.add_like!(inception)    # writes to DB, updates Redis
+user.has_like?(inception)    # no DB hit   # => true
+user.likes_count             # no DB hit   # => 2
+user.remove_like(inception)  # deletes from DB, updates Redis
+user.has_like?(inception)    # no DB hit   # => false
+user.likes_count             # no DB hit   # => 1
 ```
-
 
 ## Installation
 
