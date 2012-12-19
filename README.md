@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/elado/kaching.png)](http://travis-ci.org/elado/kaching)
 
-Makes your DB suffer less from `COUNT(*)` queries and check for existence queries of associations, by keeping and maintaining counts and lists on Redis, for faster access.
+Makes your DB suffer less from COUNT(*) queries and check-for-existence queries of associations (has_many and has_many :through), by keeping and maintaining counts and lists on Redis, for faster access.
 
 ## Quick Intro & Examples
 
