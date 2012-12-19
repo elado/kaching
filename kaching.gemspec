@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Elad Ossadon"]
   s.email       = ["elad@ossadon.com"]
   s.homepage    = ""
-  s.summary     = %q{Cache counters and lists of Rails ActiveRecord in an external storage such as Redis.}
-  s.description = %q{Doesn't hit the DB for counters and existence of a many-to-many association.}
+  s.summary     = %q{Caches counters and lists of Rails ActiveRecord in an external storage such as Redis.}
+  s.description = %q{Makes your DB suffer less from COUNT(*) queries and check-for-existence queries of associations (has_many and has_many :through), by keeping and maintaining counts and lists on Redis, for faster access.}
 
   s.rubyforge_project = "kaching"
 
@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  # s.add_dependency 'rails', ">= 3.0.0"
   s.add_dependency 'activerecord', ">= 3.0.0"
   s.add_dependency 'redis'
 
