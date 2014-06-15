@@ -181,7 +181,7 @@ module Kaching
       end
       
       list_class.send(:after_commit) do
-        action = if self.send(:transaction_include_action?, :create)
+        action = if self.send(:transaction_include_any_action?, [:create])
           :create
         elsif self.destroyed?
           :destroy
