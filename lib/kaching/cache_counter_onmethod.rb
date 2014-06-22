@@ -53,7 +53,7 @@ module Kaching
           
           return unless belongs_to_item
 
-          created = self.send(:transaction_include_action?, :create)
+          created = self.send(:transaction_include_any_action?, [:create])
           destroyed = self.destroyed?
     
           Kaching.logger.info " > COUNTABLE after_commit #{countable_class.name} belongs_to(#{foreign_key}) = #{belongs_to_item.class.name}##{belongs_to_item.id} | #{created ? 'created' : destroyed ? 'destroyed' : 'none'}"
