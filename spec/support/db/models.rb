@@ -53,8 +53,8 @@ class User < ActiveRecord::Base
                       
   cache_list :user_movies, item_key: 'movie'
 
-  has_many :following_users, class_name: 'Follow', foreign_key: 'user_id', conditions: "item_type = 'User'"
-  has_many :follower_users, class_name: 'Follow', foreign_key: 'item_id', conditions: "item_type = 'User'"
+  has_many :following_users, class_name: 'Follow', foreign_key: 'user_id', -> { where item_type: 'User' }
+  has_many :follower_users, class_name: 'Follow', foreign_key: 'item_id', -> { where item_type: 'User' }
   
   cache_list :following_users, class_name: 'Follow',
                                item_key: 'item',
